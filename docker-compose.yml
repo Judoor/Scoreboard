@@ -1,0 +1,17 @@
+version: "3.9"
+
+services:
+  scoreboard:
+    build: .
+    ports:
+      - "8080:3001"       # http://localhost:8080 en local, http://NAS_IP:8080 sur le NAS
+    volumes:
+      - scoreboard_data:/data   # Données persistantes (joueurs, historique)
+    environment:
+      - DB_PATH=/data/db.json
+      - PORT=3001
+    restart: unless-stopped
+
+volumes:
+  scoreboard_data:
+    driver: local

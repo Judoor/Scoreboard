@@ -1,0 +1,10 @@
+# Données persistées (ne pas versionner les scores)
+data/db.json
+
+# Node
+node_modules/
+npm-debug.log*
+
+# Divers
+.DS_Store
+*.zip
