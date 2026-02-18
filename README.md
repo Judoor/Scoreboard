@@ -25,8 +25,8 @@ Application web de suivi de scores pour jeux de société. Interface mobile-firs
 
 ```bash
 # Cloner le repo
-git clone https://github.com/TON_USERNAME/TON_REPO.git
-cd TON_REPO
+git clone https://github.com/Judoor/Scoreboard.git
+cd Scoreboard
 
 # Lancer
 docker compose up --build
@@ -48,8 +48,8 @@ Les données (joueurs, historique) sont persistées dans le dossier `data/` via 
 
 ```bash
 # Cloner le repo
-git clone https://github.com/TON_USERNAME/TON_REPO.git
-cd TON_REPO
+git clone https://github.com/Judoor/Scoreboard.git
+cd Scoreboard
 
 # Installer les dépendances
 npm install
