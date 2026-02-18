@@ -2,11 +2,13 @@ version: "3.9"
 
 services:
   scoreboard:
-    build: .
+    # Replace <username> and <repo> with your actual GitHub info
+    # The name must match what GHCR created (usually ghcr.io/owner/repo)
+    image: ghcr.io/Judoor/Scoreboard:main
     ports:
-      - "8080:3001"       # http://localhost:8080 en local, http://NAS_IP:8080 sur le NAS
+      - "8080:3001"
     volumes:
-      - scoreboard_data:/data   # Données persistantes (joueurs, historique)
+      - scoreboard_data:/data
     environment:
       - DB_PATH=/data/db.json
       - PORT=3001
