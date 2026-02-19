@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>ScoreBoard — Jeux de société</title>
+  <title>ScoreBoard</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <link href="https://api.fontshare.com/v2/css?f[]=clash-display@400,500,600,700&display=swap" rel="stylesheet">
@@ -11,123 +11,176 @@
 </head>
 <body>
 
-<!-- BARRE REPRISE -->
-<div class="resume-bar" id="resumeBar"></div>
+<!-- ── ÉCRAN AUTH ─────────────────────────────────────────────────────────── -->
+<div id="authScreen" class="auth-screen">
+  <div class="auth-box">
+    <div class="auth-logo">🎲 ScoreBoard</div>
+    <p class="auth-tagline">Votre espace de score personnel</p>
 
-<!-- SIDEBAR -->
-<nav class="sidebar" id="sidebar">
-  <div class="sidebar-logo">
-    <span class="logo-mark">🎲</span>
-    <span class="logo-name">ScoreBoard</span>
+    <div class="auth-tabs">
+      <button class="auth-tab active" id="tabLogin">Connexion</button>
+      <button class="auth-tab" id="tabRegister">Nouveau compte</button>
+    </div>
+
+    <div class="auth-form" id="formLogin">
+      <div class="form-group">
+        <label>Nom du compte</label>
+        <input type="text" id="loginName" placeholder="ex: Famille Dupont" maxlength="32" autocomplete="username"/>
+      </div>
+      <div class="form-group">
+        <label>PIN <span class="auth-hint">4 chiffres</span></label>
+        <input type="password" id="loginPin" placeholder="••••" maxlength="4" inputmode="numeric" pattern="[0-9]*" autocomplete="current-password"/>
+      </div>
+      <div class="auth-error" id="loginError"></div>
+      <button class="auth-btn" id="btnLogin">Se connecter</button>
+    </div>
+
+    <div class="auth-form" id="formRegister" style="display:none">
+      <div class="form-group">
+        <label>Nom du compte <span class="auth-hint">2–32 caractères</span></label>
+        <input type="text" id="regName" placeholder="ex: Soirée Jeux" maxlength="32" autocomplete="username"/>
+      </div>
+      <div class="form-group">
+        <label>PIN <span class="auth-hint">4 chiffres, ne pas oublier !</span></label>
+        <input type="password" id="regPin" placeholder="••••" maxlength="4" inputmode="numeric" pattern="[0-9]*" autocomplete="new-password"/>
+      </div>
+      <div class="auth-error" id="regError"></div>
+      <button class="auth-btn" id="btnRegister">Créer le compte</button>
+    </div>
+
+    <button class="auth-admin-link" id="btnShowAdmin">Accès administration</button>
   </div>
-  <ul class="nav-list">
-    <li><a class="nav-item active" data-view="home"    href="#">⌂ Accueil</a></li>
-    <li><a class="nav-item"        data-view="games"   href="#">🎮 Jeux</a></li>
-    <li><a class="nav-item"        data-view="history" href="#">📜 Historique</a></li>
-    <li><a class="nav-item"        data-view="players" href="#">👥 Joueurs</a></li>
-  </ul>
-  <div class="sidebar-bottom">
-    <div class="sb-stat"><span id="playerCount">0</span> joueurs</div>
-    <button class="btn-new-player" id="btnNewPlayer">+ Nouveau joueur</button>
+</div>
+
+<!-- ── MODAL ADMIN LOGIN ──────────────────────────────────────────────────── -->
+<div class="modal" id="modalAdmin">
+  <div class="modal-box">
+    <div class="modal-head">
+      <h2>🛠 Administration</h2>
+      <button onclick="closeModal('modalAdmin')">✕</button>
+    </div>
+    <div class="form-group">
+      <label>Mot de passe admin</label>
+      <input type="password" id="adminPassword" placeholder="••••••••" autocomplete="current-password"/>
+    </div>
+    <div class="auth-error" id="adminError"></div>
+    <button class="auth-btn" id="btnAdminLogin">Connexion admin</button>
   </div>
-  <button class="sidebar-close" id="sidebarClose">✕</button>
-</nav>
+</div>
 
-<div class="overlay" id="overlay"></div>
+<!-- ── APP ───────────────────────────────────────────────────────────────── -->
+<div id="appScreen" style="display:none">
 
-<main class="main">
-  <header class="topbar">
-    <button class="hamburger" id="hamburger"><span></span><span></span><span></span></button>
-    <div class="topbar-title" id="topbarTitle">ScoreBoard</div>
-  </header>
+  <div class="resume-bar" id="resumeBar"></div>
 
-  <div class="views">
+  <nav class="sidebar" id="sidebar">
+    <div class="sidebar-logo">
+      <span class="logo-mark">🎲</span>
+      <span class="logo-name">ScoreBoard</span>
+    </div>
+    <div class="sidebar-account">
+      <span class="sa-label">Connecté en tant que</span>
+      <span class="sa-name" id="accountName"></span>
+    </div>
+    <ul class="nav-list">
+      <li><a class="nav-item active" data-view="home"    href="#">⌂ Accueil</a></li>
+      <li><a class="nav-item"        data-view="games"   href="#">🎮 Jeux</a></li>
+      <li><a class="nav-item"        data-view="history" href="#">📜 Historique</a></li>
+      <li><a class="nav-item"        data-view="players" href="#">👥 Joueurs</a></li>
+      <li id="navAdmin" style="display:none"><a class="nav-item" data-view="admin" href="#">🛠 Admin</a></li>
+    </ul>
+    <div class="sidebar-bottom">
+      <div class="sb-stat"><span id="playerCount">0</span> joueurs</div>
+      <button class="btn-new-player" id="btnNewPlayer">+ Nouveau joueur</button>
+      <button class="btn-logout" id="btnLogout">Déconnexion</button>
+    </div>
+    <button class="sidebar-close" id="sidebarClose">✕</button>
+  </nav>
 
-    <!-- HOME -->
-    <section class="view active" id="view-home">
-      <div class="home-hero">
-        <h1>Bonne<em> partie</em> !</h1>
-        <p>Choisissez un jeu pour commencer</p>
-      </div>
-      <div class="home-section">
-        <div class="hs-header">
-          <h2>⭐ Favoris</h2>
-          <a href="#" class="see-all" data-view="games">Tous les jeux →</a>
+  <div class="overlay" id="overlay"></div>
+
+  <main class="main">
+    <header class="topbar">
+      <button class="hamburger" id="hamburger"><span></span><span></span><span></span></button>
+      <div class="topbar-title" id="topbarTitle">ScoreBoard</div>
+    </header>
+
+    <div class="views">
+
+      <!-- HOME -->
+      <section class="view active" id="view-home">
+        <div class="home-hero"><h1>Bonne<em> partie</em> !</h1><p>Choisissez un jeu pour commencer</p></div>
+        <div class="home-section">
+          <div class="hs-header"><h2>⭐ Favoris</h2><a href="#" class="see-all" data-view="games">Tous →</a></div>
+          <div class="games-grid" id="homeFavGrid"></div>
         </div>
-        <div class="games-grid" id="homeFavGrid"></div>
-      </div>
-      <div class="home-section">
-        <div class="hs-header">
-          <h2>Parties récentes</h2>
-          <a href="#" class="see-all" data-view="history">Tout voir →</a>
+        <div class="home-section">
+          <div class="hs-header"><h2>Parties récentes</h2><a href="#" class="see-all" data-view="history">Tout voir →</a></div>
+          <div id="recentHome"></div>
         </div>
-        <div id="recentHome"></div>
-      </div>
-    </section>
+      </section>
 
-    <!-- GAMES -->
-    <section class="view" id="view-games">
-      <div class="view-title"><h1>🎮 Jeux</h1></div>
-      <div class="games-search-wrap">
-        <input type="text" class="games-search" id="gamesSearch" placeholder="🔍 Rechercher un jeu..." />
-      </div>
-      <div class="games-grid" id="allGamesGrid"></div>
-    </section>
-
-    <!-- GAME SETUP -->
-    <section class="view" id="view-game">
-      <button class="btn-back" id="btnBackSetup">← Retour</button>
-      <div class="setup-header">
-        <div class="setup-emoji" id="setupGameEmoji"></div>
-        <div>
-          <h1 id="setupGameName"></h1>
-          <p id="setupGameDesc"></p>
+      <!-- GAMES -->
+      <section class="view" id="view-games">
+        <div class="view-title"><h1>🎮 Jeux</h1></div>
+        <div class="games-search-wrap">
+          <input type="text" class="games-search" id="gamesSearch" placeholder="🔍 Rechercher..." maxlength="50"/>
         </div>
-      </div>
-      <h2 class="setup-label">Sélectionner les joueurs</h2>
-      <div id="playerSelector"></div>
-    </section>
+        <div class="games-grid" id="allGamesGrid"></div>
+      </section>
 
-    <!-- SESSION -->
-    <section class="view" id="view-session">
-      <div id="sessionContent"></div>
-    </section>
-
-    <!-- RESULT -->
-    <section class="view" id="view-result">
-      <div id="confettiContainer" class="confetti-container"></div>
-      <div class="result-wrap">
-        <div class="result-game-label">
-          <span id="resultEmoji"></span>
-          <span id="resultTitle"></span>
+      <!-- GAME SETUP -->
+      <section class="view" id="view-game">
+        <button class="btn-back" id="btnBackSetup">← Retour</button>
+        <div class="setup-header">
+          <div class="setup-emoji" id="setupGameEmoji"></div>
+          <div><h1 id="setupGameName"></h1><p id="setupGameDesc"></p></div>
         </div>
-        <h1 class="result-heading">Résultats</h1>
-        <div class="result-podium" id="resultPodium"></div>
-        <div class="result-actions">
-          <button class="btn-play-again" id="btnPlayAgain">Rejouer</button>
-          <button class="btn-back-home"  id="btnBackHome">Accueil</button>
+        <h2 class="setup-label">Sélectionner les joueurs</h2>
+        <div id="playerSelector"></div>
+      </section>
+
+      <!-- SESSION -->
+      <section class="view" id="view-session">
+        <div id="sessionContent"></div>
+      </section>
+
+      <!-- RESULT -->
+      <section class="view" id="view-result">
+        <div id="confettiContainer" class="confetti-container"></div>
+        <div class="result-wrap">
+          <div class="result-game-label"><span id="resultEmoji"></span><span id="resultTitle"></span></div>
+          <h1 class="result-heading">Résultats</h1>
+          <div class="result-podium" id="resultPodium"></div>
+          <div class="result-actions">
+            <button class="btn-play-again" id="btnPlayAgain">Rejouer</button>
+            <button class="btn-back-home"  id="btnBackHome">Accueil</button>
+          </div>
         </div>
-      </div>
-    </section>
+      </section>
 
-    <!-- HISTORY -->
-    <section class="view" id="view-history">
-      <div class="view-title"><h1>📜 Historique</h1></div>
-      <select class="history-filter" id="historyFilter"></select>
-      <div id="historyList"></div>
-    </section>
+      <!-- HISTORY -->
+      <section class="view" id="view-history">
+        <div class="view-title"><h1>📜 Historique</h1></div>
+        <select class="history-filter" id="historyFilter"></select>
+        <div id="historyList"></div>
+      </section>
 
-    <!-- PLAYERS -->
-    <section class="view" id="view-players">
-      <div class="view-title">
-        <h1>👥 Joueurs</h1>
-        <button class="btn-inline-add" id="btnNewPlayer2">+ Ajouter</button>
-      </div>
-      <div class="players-grid" id="playersList"></div>
-    </section>
+      <!-- PLAYERS -->
+      <section class="view" id="view-players">
+        <div class="view-title">
+          <h1>👥 Joueurs</h1>
+          <button class="btn-inline-add" id="btnNewPlayer2">+ Ajouter</button>
+        </div>
+        <div class="players-grid" id="playersList"></div>
+      </section>
 
-  </div>
-</main>
+      <!-- ADMIN -->
+      <section class="view" id="view-admin"></section>
+
+    </div>
+  </main>
+</div>
 
 <!-- MODAL NEW PLAYER -->
 <div class="modal" id="modalPlayer">
@@ -137,12 +190,10 @@
       <button onclick="closeModal('modalPlayer')">✕</button>
     </div>
     <form id="newPlayerForm" class="player-form">
-      <div class="pf-avatar-row">
-        <div class="pf-avatars" id="pfAvatars"></div>
-      </div>
+      <div class="pf-avatar-row"><div class="pf-avatars" id="pfAvatars"></div></div>
       <div class="form-group">
         <label>Nom *</label>
-        <input type="text" name="name" required placeholder="Pseudo du joueur" autocomplete="off"/>
+        <input type="text" name="name" required placeholder="Pseudo" maxlength="24" autocomplete="off"/>
       </div>
       <div class="form-group">
         <label>Emoji avatar</label>
@@ -153,7 +204,7 @@
         <input type="color" name="color" value="#6366f1"/>
       </div>
       <label class="temp-player-label">
-        <input type="checkbox" id="playerTempCheck" />
+        <input type="checkbox" id="playerTempCheck"/>
         <span>Joueur temporaire <em>(supprimé après la partie)</em></span>
       </label>
       <button type="submit" class="btn-modal-submit">Créer le joueur</button>
@@ -168,16 +219,66 @@
 <script src="/js/core/utils.js"></script>
 <script src="/js/core/app.js"></script>
 <script>
+  // Auth screen logic
+  const tabLogin    = document.getElementById('tabLogin');
+  const tabRegister = document.getElementById('tabRegister');
+  const formLogin   = document.getElementById('formLogin');
+  const formReg     = document.getElementById('formRegister');
+
+  tabLogin.addEventListener('click', () => {
+    tabLogin.classList.add('active'); tabRegister.classList.remove('active');
+    formLogin.style.display=''; formReg.style.display='none';
+    // Sync champs
+    document.getElementById('loginName').value = document.getElementById('regName').value;
+    document.getElementById('loginPin').value  = document.getElementById('regPin').value;
+    document.getElementById('loginError').textContent = '';
+  });
+  tabRegister.addEventListener('click', () => {
+    tabRegister.classList.add('active'); tabLogin.classList.remove('active');
+    formReg.style.display=''; formLogin.style.display='none';
+    document.getElementById('regName').value = document.getElementById('loginName').value;
+    document.getElementById('regPin').value  = document.getElementById('loginPin').value;
+    document.getElementById('regError').textContent = '';
+  });
+
+  document.getElementById('btnLogin').addEventListener('click', () => {
+    // Sync depuis l'onglet login
+    const name = document.getElementById('loginName').value;
+    const pin  = document.getElementById('loginPin').value;
+    App.init && null; // s'assurer que App existe
+    App.doLogin();
+  });
+  document.getElementById('btnRegister').addEventListener('click', () => {
+    // Copier les champs dans loginName/loginPin pour que doRegister les lise
+    document.getElementById('loginName').value = document.getElementById('regName').value;
+    document.getElementById('loginPin').value  = document.getElementById('regPin').value;
+    App.doRegister();
+  });
+
+  // Enter sur les champs auth
+  ['loginName','loginPin'].forEach(id => {
+    document.getElementById(id)?.addEventListener('keydown', e => { if(e.key==='Enter') App.doLogin(); });
+  });
+  ['regName','regPin'].forEach(id => {
+    document.getElementById(id)?.addEventListener('keydown', e => {
+      if(e.key==='Enter') { document.getElementById('loginName').value=document.getElementById('regName').value; document.getElementById('loginPin').value=document.getElementById('regPin').value; App.doRegister(); }
+    });
+  });
+
+  document.getElementById('btnShowAdmin').addEventListener('click', () => openModal('modalAdmin'));
+  document.getElementById('btnAdminLogin').addEventListener('click', () => App.doAdminLogin());
+  document.getElementById('adminPassword')?.addEventListener('keydown', e => { if(e.key==='Enter') App.doAdminLogin(); });
+
+  // Bouton joueurs page players
   document.getElementById('btnNewPlayer2')?.addEventListener('click', () => {
     App.openNewPlayerModal(() => App.renderPlayers());
   });
 
+  // Avatar presets
   const presets = ['😀','😎','🤓','🥸','🤩','😈','👾','🐱','🦊','🐼','🦁','🐸','👽','🤖','🧙','🧛'];
   const pfAvatars = document.getElementById('pfAvatars');
   const pfInput   = document.getElementById('pfAvatarInput');
-  pfAvatars.innerHTML = presets.map(a =>
-    `<button type="button" class="avatar-preset" data-a="${a}">${a}</button>`
-  ).join('');
+  pfAvatars.innerHTML = presets.map(a => `<button type="button" class="avatar-preset" data-a="${a}">${a}</button>`).join('');
   pfAvatars.querySelectorAll('.avatar-preset').forEach(btn => {
     btn.addEventListener('click', () => {
       pfInput.value = btn.dataset.a;

@@ -1,72 +1,98 @@
-// ─── CONFIG ───────────────────────────────────────────────────────────────────
-const API_BASE = window.SCOREBOARD_API || '/api';
+// ─── ESCAPE HTML ──────────────────────────────────────────────────────────────
+function esc(str) {
+  return String(str ?? '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
 
-// ─── API ──────────────────────────────────────────────────────────────────────
-window.API = {
-  async fetch(path, opts = {}) {
-    try {
-      const r = await fetch(API_BASE + path, {
-        headers: { 'Content-Type': 'application/json' },
-        ...opts,
-      });
-      if (!r.ok) throw new Error(await r.text());
-      return r.json();
-    } catch (e) {
-      console.error('[API]', path, e);
-      return null;
-    }
-  },
-  get: (p) => window.API.fetch(p),
-  post: (p, body) => window.API.fetch(p, { method: 'POST', body: JSON.stringify(body) }),
-  put: (p, body) => window.API.fetch(p, { method: 'PUT', body: JSON.stringify(body) }),
-  delete: (p) => window.API.fetch(p, { method: 'DELETE' }),
-};
-
-// ─── UTILS ────────────────────────────────────────────────────────────────────
-window.esc = (s) => String(s ?? '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-
-window.formatDate = (iso) => {
-  const d = new Date(iso);
-  return d.toLocaleDateString('fr-FR', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' });
-};
-
-window.formatDateShort = (iso) => {
-  const d = new Date(iso);
-  return d.toLocaleDateString('fr-FR', { day: '2-digit', month: 'short' });
-};
+// ─── FORMAT DATE ──────────────────────────────────────────────────────────────
+function formatDateShort(dateStr) {
+  if (!dateStr) return '';
+  const d = new Date(dateStr);
+  return d.toLocaleDateString('fr-FR', { day:'2-digit', month:'short', hour:'2-digit', minute:'2-digit' });
+}
 
 // ─── TOAST ────────────────────────────────────────────────────────────────────
-window.toast = (msg, type = 'info') => {
+let _toastTimer;
+function toast(msg, type = 'info') {
   const el = document.getElementById('toast');
+  if (!el) return;
   el.textContent = msg;
-  el.className = `toast toast-${type} show`;
-  clearTimeout(window._toastTimer);
-  window._toastTimer = setTimeout(() => el.classList.remove('show'), 2800);
-};
+  el.className = `toast toast-${type} toast-show`;
+  clearTimeout(_toastTimer);
+  _toastTimer = setTimeout(() => el.classList.remove('toast-show'), 2800);
+}
 
-// ─── MODAL HELPERS ────────────────────────────────────────────────────────────
-window.openModal = (id) => {
+// ─── MODAL ────────────────────────────────────────────────────────────────────
+function openModal(id) {
   document.getElementById(id)?.classList.add('active');
   document.getElementById('overlay')?.classList.add('active');
-};
-window.closeModal = (id) => {
+}
+function closeModal(id) {
   document.getElementById(id)?.classList.remove('active');
   document.getElementById('overlay')?.classList.remove('active');
+}
+
+// ─── LOAD SCRIPT ──────────────────────────────────────────────────────────────
+function loadScript(src) {
+  return new Promise((resolve, reject) => {
+    if (document.querySelector(`script[src="/${src}"]`)) return resolve();
+    const s = document.createElement('script');
+    s.src = '/' + src;
+    s.onload = resolve;
+    s.onerror = reject;
+    document.head.appendChild(s);
+  });
+}
+
+// ─── API CLIENT (avec token de session) ───────────────────────────────────────
+const API = {
+  _token: null,
+
+  setToken(tok) {
+    this._token = tok;
+    if (tok) localStorage.setItem('sb_token', tok);
+    else     localStorage.removeItem('sb_token');
+  },
+
+  loadToken() {
+    this._token = localStorage.getItem('sb_token');
+    return this._token;
+  },
+
+  headers() {
+    const h = { 'Content-Type': 'application/json' };
+    if (this._token) h['x-session-token'] = this._token;
+    return h;
+  },
+
+  async request(method, url, body) {
+    const opts = { method, headers: this.headers() };
+    if (body !== undefined) opts.body = JSON.stringify(body);
+    const res = await fetch('/api' + url, opts);
+    if (res.status === 401) {
+      // Session expirée → retour au login
+      this.setToken(null);
+      if (window.App) App.showLogin();
+      return null;
+    }
+    return res.json();
+  },
+
+  get(url)          { return this.request('GET',    url); },
+  post(url, body)   { return this.request('POST',   url, body); },
+  delete(url)       { return this.request('DELETE', url); },
 };
 
-// ─── PLAYER AVATAR ────────────────────────────────────────────────────────────
-window.playerBadge = (player, size = 'md') => {
-  return `<div class="player-badge player-badge-${size}" style="--pc:${player?.color || '#6366f1'}">
-    <span class="pb-avatar">${player?.avatar || '😀'}</span>
-  </div>`;
+// ─── LIMITES (miroir serveur) ─────────────────────────────────────────────────
+const LIMITS = {
+  accountName: 32,
+  playerName:  24,
+  avatarEmoji:  4,
 };
 
-// ─── DYNAMIC SCRIPT LOADER ────────────────────────────────────────────────────
-window.loadScript = (src) => new Promise((resolve, reject) => {
-  if (document.querySelector(`script[src="${src}"]`)) return resolve();
-  const s = document.createElement('script');
-  s.src = src;
-  s.onload = resolve;
-  s.onerror = reject;
-  document.head.appendChild(s);
-});
+// ─── INPUT SANITIZER ─────────────────────────────────────────────────────────
+function applyMaxLength(input, max) {
+  input.setAttribute('maxlength', max);
+  input.addEventListener('input', () => {
+    if (input.value.length > max) input.value = input.value.slice(0, max);
+  });
+}

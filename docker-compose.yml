@@ -1,19 +1,11 @@
-version: "3.9"
-
 services:
   scoreboard:
-    # Replace <username> and <repo> with your actual GitHub info
-    # The name must match what GHCR created (usually ghcr.io/owner/repo)
-    image: ghcr.io/Judoor/Scoreboard:main
+    build: .
     ports:
       - "8080:3001"
     volumes:
-      - scoreboard_data:/data
+      - ./data:/app/data
     environment:
-      - DB_PATH=/data/db.json
-      - PORT=3001
+      - NODE_ENV=production
+      - ADMIN_PASSWORD=${ADMIN_PASSWORD:-admin1234}
     restart: unless-stopped
-
-volumes:
-  scoreboard_data:
-    driver: local

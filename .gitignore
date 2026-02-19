@@ -8,3 +8,4 @@ npm-debug.log*
 # Divers
 .DS_Store
 *.zip
+.env

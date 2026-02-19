@@ -74,4 +74,17 @@ window.GAME_REGISTRY = [
     targetScore: null,
     module: 'js/games/dartscricket.js',
   },
+  {
+  id:           'skull-king',
+  name:         'Skull King',
+  emoji:        '💀',
+  color:        '#0ea5e9',
+  colorDark:    '#0c4a6e',
+  description:  'Cartes • Pariez sur vos plis, gagnez gros ou coulez',
+  minPlayers:   2,
+  maxPlayers:   8,
+  winCondition: 'highest',
+  targetScore:  null,
+  module:       'js/games/skull-king.js',
+},
 ];
