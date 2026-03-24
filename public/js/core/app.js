@@ -389,11 +389,17 @@ const App = {
     const medals = ['🥇','🥈','🥉'];
     document.getElementById('resultPodium').innerHTML = sorted.map((p,i) => {
       const pl = this.players.find(x=>x.id===p.playerId) || {name:p.name,avatar:'😀',color:'#888'};
+      const statsHtml = p.stats
+        ? `<div class="rp-meta">Valides ${p.stats.validDarts ?? 0}/${p.stats.dartsThrown ?? 0}${
+            p.stats.threeDartAverage !== undefined ? ` · Moy.3 ${p.stats.threeDartAverage}` : ''
+          }</div>`
+        : '';
       return `<div class="result-player ${i===0?'winner':''}">
         <div class="rp-medal">${medals[i]||`#${i+1}`}</div>
         <div class="rp-avatar" style="background:${pl.color}20;border-color:${pl.color}">${pl.avatar}</div>
         <div class="rp-name">${esc(pl.name)}</div>
         <div class="rp-score">${p.finalScore.toLocaleString()} pts</div>
+        ${statsHtml}
         ${i===0?'<div class="rp-win-label">Gagnant !</div>':''}
       </div>`;
     }).join('');

@@ -491,6 +491,7 @@ body {
 }
 .rp-name { font-weight: 600; font-size: .85rem; margin-bottom: 4px; }
 .rp-score { font-family:var(--ff-display);font-size:1.1rem;font-weight:700; }
+.rp-meta { margin-top: 6px; font-size: .7rem; color: var(--text2); line-height: 1.35; }
 .rp-win-label {
   margin-top: 8px;
   font-size: .7rem;
@@ -1820,6 +1821,30 @@ body {
 .dt3-board-wrap {
   display: flex;
   justify-content: center;
+}
+.dt3-shot-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.dt3-mult-row {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 8px;
+}
+.dt3-num-grid {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 8px;
+}
+.dt3-mult-btn.active,
+.dc-mult-btn.active {
+  background: color-mix(in srgb, var(--gc, #ef4444) 28%, transparent);
+  border: 1px solid var(--gc, #ef4444);
+}
+.dt3-num-btn,
+.dc-target-btn2 {
+  min-height: 42px;
 }
 .dt3-board-actions {
   display: flex;
