@@ -329,11 +329,14 @@ window.GAME_MODULES['dartscricket'] = (() => {
     if (!el) return;
     el.innerHTML = session.teams.map((t, i) => {
       const st = t.stats || {};
+      const thrown = st.dartsThrown || 0;
+      const valid = st.validDarts || 0;
+      const avgValidPer3 = thrown ? ((valid / thrown) * 3).toFixed(2) : '0.00';
       return `<div class="dc-score-chip ${i === session.currentTeamIndex ? 'active' : ''}" style="--pc:${t.color}">
         <span>${t.members.length > 1 ? '👥' : t.members[0].avatar}</span>
         <span class="dc-chip-name">${esc(t.name)}</span>
         <span class="dc-chip-pts">${t.points} pts</span>
-        <span class="dc-chip-pts">Valides ${st.validDarts || 0}/${st.dartsThrown || 0}</span>
+        <span class="dc-chip-pts">${avgValidPer3}</span>
       </div>`;
     }).join('');
   }

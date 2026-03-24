@@ -476,7 +476,7 @@ window.GAME_MODULES['darts301'] = (() => {
       const st = t.stats || {};
       const valid = st.validDarts || 0;
       const thrown = st.dartsThrown || 0;
-      const avg = thrown ? (st.scoredPoints / thrown).toFixed(2) : '0.00';
+      const avgValidPer3 = thrown ? ((valid / thrown) * 3).toFixed(2) : '0.00';
       return `<div class="dt3-score-card ${isActive ? 'active' : ''}" style="--pc:${t.color}">
         <div class="dt3-sc-head">
           <span class="dt3-sc-avatar">${t.members.length === 1 ? t.members[0].avatar : '👥'}</span>
@@ -485,7 +485,7 @@ window.GAME_MODULES['darts301'] = (() => {
         </div>
         <div class="dt3-sc-score">${t.score}</div>
         <div class="dt3-sc-bar"><div class="dt3-sc-fill" style="width:${pct}%"></div></div>
-        <div class="dt3-sc-last">Darts valides: ${valid}/${thrown} · Moy: ${avg}</div>
+        <div class="dt3-sc-last">${avgValidPer3}</div>
         <div class="dt3-sc-last">${lastStr}</div>
       </div>`;
     }).join('');
