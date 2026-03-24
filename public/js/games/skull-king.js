@@ -297,6 +297,7 @@ window.GAME_MODULES['skull-king'] = (() => {
       let delta = 0;
       const bid = p.bid;
       const won = p.won;
+      const bonus = Number(p.bonus) || 0;
 
       if (bid === 0) {
         // Pari à 0 : +10×manche si réussi, -10×manche sinon
@@ -306,15 +307,18 @@ window.GAME_MODULES['skull-king'] = (() => {
       } else {
         if (won === bid) {
           // Pari réussi : +20 par pli + bonus
-          delta = bid * 20 + p.bonus;
+          delta = bid * 20;
         } else {
-          // Pari raté : -10 par pli d'écart (aucun bonus)
+          // Pari raté : -10 par pli d'écart
           delta = -Math.abs(won - bid) * 10;
         }
       }
 
+      // Le bonus saisi est toujours appliqué, même si le pari est raté ou à 0.
+      delta += bonus;
+
       p.score += delta;
-      p.history.push({ bid, won, bonus: p.bonus, delta });
+      p.history.push({ bid, won, bonus, delta });
     });
   }
 
