@@ -389,9 +389,16 @@ const App = {
     const medals = ['🥇','🥈','🥉'];
     document.getElementById('resultPodium').innerHTML = sorted.map((p,i) => {
       const pl = this.players.find(x=>x.id===p.playerId) || {name:p.name,avatar:'😀',color:'#888'};
-      const statsHtml = p.stats
-        ? `<div class="rp-meta">Valides ${p.stats.validDarts ?? 0}/${p.stats.dartsThrown ?? 0}${
-            p.stats.threeDartAverage !== undefined ? ` · Moy.3 ${p.stats.threeDartAverage}` : ''
+      const hasDartsStats = p.stats && (p.stats.dartsThrown !== undefined || p.stats.validDarts !== undefined);
+      const statsHtml = hasDartsStats
+        ? `<div class="rp-meta">${
+            p.stats.threeDartAverage !== undefined
+              ? `Moy.3 ${p.stats.threeDartAverage}`
+              : `Moy.3 ${((p.stats.validDarts || 0) / Math.max(1, p.stats.dartsThrown || 0) * 3).toFixed(2)}`
+          }${
+            p.stats.busts !== undefined ? ` · Bust ${p.stats.busts}` : ''
+          }${
+            p.stats.checkoutAttempts !== undefined ? ` · Checkout ${p.stats.checkoutSuccess || 0}/${p.stats.checkoutAttempts || 0}` : ''
           }</div>`
         : '';
       return `<div class="result-player ${i===0?'winner':''}">
