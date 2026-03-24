@@ -206,7 +206,6 @@ window.GAME_MODULES['darts301'] = (() => {
         </div>
         <div class="dt3-shot-panel" id="dt3ShotPanel">
           <div class="dt3-mult-row">
-            <button class="dt3-btn dt3-mult-btn" data-mult="single">Simple</button>
             <button class="dt3-btn dt3-mult-btn" data-mult="double">Double</button>
             <button class="dt3-btn dt3-mult-btn" data-mult="triple">Triple</button>
             <button class="dt3-btn dt3-mult-btn" data-mult="bull25">Bull 25</button>

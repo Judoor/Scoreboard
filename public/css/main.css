@@ -1618,7 +1618,8 @@ body {
 }
 
 .dt3-btn {
-  padding: 12px 20px; border-radius: var(--rs); border: none; color: #fff;
+  padding: 12px 20px; border-radius: var(--rs); border: 1px solid var(--border2);
+  background: var(--surface2); color: var(--text);
   font-family: var(--ff-display); font-weight: 700; font-size: .9rem; cursor: pointer; transition: all var(--t);
 }
 .dt3-btn:disabled { opacity: .3; cursor: not-allowed; }
@@ -1708,13 +1709,16 @@ body {
 .dc-variant {
   padding: 12px 14px; background: var(--bg3); border: 1px solid var(--border);
   border-radius: var(--r); cursor: pointer; text-align: left; transition: all var(--t);
+  color: var(--text);
 }
 .dc-variant:hover, .dc-variant.active {
   background: color-mix(in srgb,#14b8a6 12%,transparent);
   border-color: #14b8a6;
 }
-.dc-variant-name { font-weight: 700; font-size: .9rem; margin-bottom: 3px; }
-.dc-variant-desc { font-size: .78rem; color: var(--text3); }
+.dc-variant-name { font-weight: 700; font-size: .9rem; margin-bottom: 3px; color: var(--text); }
+.dc-variant-desc { font-size: .78rem; color: var(--text2); }
+.dc-variant:hover .dc-variant-desc,
+.dc-variant.active .dc-variant-desc { color: var(--text); }
 
 .dc-grid-wrap { overflow-x: auto; }
 .dc-grid {
@@ -1751,9 +1755,9 @@ body {
   font-size: 1rem; font-weight: 700; min-height: 32px;
 }
 .dc-cell.closed { color: var(--pc,#14b8a6); }
-.dc-mark1 { color: var(--text3); font-size: 1.1rem; }
-.dc-mark2 { color: var(--yellow); font-size: 1rem; }
-.dc-mark3 { color: var(--pc,#14b8a6); font-size: 1rem; }
+.dc-mark1 { color: var(--text3); font-size: 1.05rem; font-weight: 600; }
+.dc-mark2 { color: var(--yellow); font-size: .95rem; font-weight: 800; letter-spacing: -1px; }
+.dc-mark3 { color: var(--pc,#14b8a6); font-size: .9rem; font-weight: 900; letter-spacing: -1px; }
 .dc-score-row { background: color-mix(in srgb,#14b8a6 8%,transparent); border-top: 2px solid var(--border2); }
 .dc-score-cell { font-family: var(--ff-display); font-size: 1.1rem; color: var(--pc,#14b8a6); }
 
@@ -1829,7 +1833,7 @@ body {
 }
 .dt3-mult-row {
   display: grid;
-  grid-template-columns: repeat(5, minmax(0, 1fr));
+  grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 8px;
 }
 .dt3-num-grid {
@@ -1841,6 +1845,7 @@ body {
 .dc-mult-btn.active {
   background: color-mix(in srgb, var(--gc, #ef4444) 28%, transparent);
   border: 1px solid var(--gc, #ef4444);
+  color: #fff;
 }
 .dt3-num-btn,
 .dc-target-btn2 {

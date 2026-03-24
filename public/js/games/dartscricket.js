@@ -164,7 +164,6 @@ window.GAME_MODULES['dartscricket'] = (() => {
         </div>
         <div class="dt3-shot-panel">
           <div class="dt3-mult-row">
-            <button class="dt3-btn dc-mult-btn" data-mult="single">Simple</button>
             <button class="dt3-btn dc-mult-btn" data-mult="double">Double</button>
             <button class="dt3-btn dc-mult-btn" data-mult="triple">Triple</button>
           </div>
@@ -349,7 +348,13 @@ window.GAME_MODULES['dartscricket'] = (() => {
       const allClosed = session.teams.every(t => t.marks[ts] >= 3);
       const cells = session.teams.map(t => {
         const m = t.marks[ts] || 0;
-        const icon = m === 0 ? '' : m === 1 ? '<span class="dc-mark1">/</span>' : '<span class="dc-mark3">✗</span>';
+        const icon = m === 0
+          ? ''
+          : m === 1
+            ? '<span class="dc-mark1">/</span>'
+            : m === 2
+              ? '<span class="dc-mark2">//</span>'
+              : '<span class="dc-mark3">✕</span>';
         return `<div class="dc-cell ${m >= 3 ? 'closed' : ''}" style="--pc:${t.color}">${icon}</div>`;
       }).join('');
       return `<div class="dc-row ${allClosed ? 'all-closed' : ''}"><div class="dc-row-target">${target === 'Bull' ? '🎯' : target}</div>${cells}</div>`;
