@@ -241,7 +241,7 @@ window.GAME_MODULES['darts301'] = (() => {
           onDartThrow(session, container, 'Bull', mult);
           return;
         }
-        session.currentTurn.selectedMult = mult;
+        session.currentTurn.selectedMult = session.currentTurn.selectedMult === mult ? 'single' : mult;
         refreshMultiplierButtons(session, container);
       });
     });
@@ -290,6 +290,7 @@ window.GAME_MODULES['darts301'] = (() => {
     turn.darts.push({ sector, ring, value });
     turn.totalThisTurn += value;
     session.currentTurn.selectedMult = 'single';
+    refreshMultiplierButtons(session, container);
     if (value > 0) {
       team.stats.validDarts++;
       if (ringLabel === 'double' || ringLabel === 'bull') team.stats.doublesHit++;
