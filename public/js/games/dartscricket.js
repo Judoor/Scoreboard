@@ -180,7 +180,8 @@ window.GAME_MODULES['dartscricket'] = (() => {
     </div>`;
 
     container.querySelectorAll('.dc-mult-btn').forEach(btn => btn.addEventListener('click', () => {
-      session.currentTurn.selectedMult = btn.dataset.mult;
+      const mult = btn.dataset.mult;
+      session.currentTurn.selectedMult = session.currentTurn.selectedMult === mult ? 'single' : mult;
       refreshMultButtons(session, container);
     }));
     container.querySelectorAll('.dc-target-btn2').forEach(btn => btn.addEventListener('click', () => {
