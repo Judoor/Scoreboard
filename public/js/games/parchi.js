@@ -254,13 +254,15 @@ window.GAME_MODULES['parchi'] = (() => {
     team.score = after;
 
     const knocked = [];
+    const knockedIdx = [];
     if (value > 0 && after > 0 && after < target) {
-      session.teams.forEach(t => {
+      session.teams.forEach((t, i) => {
         if (t !== team && t.score === after) {
           t.score = 0;
           t.stats.timesKnocked++;
           team.stats.knockouts++;
           knocked.push(t.name);
+          knockedIdx.push(i);
         }
       });
     }
@@ -286,9 +288,49 @@ window.GAME_MODULES['parchi'] = (() => {
 
     if (knocked.length) {
       showMsg(container, `💥 ${team.name} renvoie ${knocked.join(', ')} à 0 !`, 'error');
+      playKillAnimation(container, team, knockedIdx, session);
     } else if (bounced) {
       showMsg(container, `↩️ Dépassement de ${before + value - target} — retour à ${after}`, 'warning');
     }
+  }
+
+  const DART_VALUES = [...new Set([
+    ...Array.from({ length: 20 }, (_, i) => [i + 1, (i + 1) * 2, (i + 1) * 3]).flat(), 25, 50,
+  ])];
+
+  // Scores reachable within `darts` darts (bounce included); a kill happens on any of them.
+  function reachableScores(start, darts, target) {
+    const reach = new Set();
+    let frontier = new Set([start]);
+    for (let d = 0; d < darts; d++) {
+      const next = new Set();
+      frontier.forEach(s => DART_VALUES.forEach(v => {
+        let n = s + v;
+        if (n > target) n = 2 * target - n;
+        if (n !== target) next.add(n);
+      }));
+      next.forEach(n => reach.add(n));
+      frontier = next;
+    }
+    return reach;
+  }
+
+  function playKillAnimation(container, killer, victimIdx, session) {
+    victimIdx.forEach(i => {
+      const card = container.querySelector(`.dt3-score-card[data-team="${i}"]`);
+      if (!card) return;
+      card.classList.remove('pch-killed');
+      void card.offsetWidth;
+      card.classList.add('pch-killed');
+    });
+    const overlay = document.createElement('div');
+    overlay.className = 'pch-kill-overlay';
+    overlay.innerHTML = `<div class="pch-kill-box" style="--pc:${killer.color}">
+      <div class="pch-kill-title">💀 KILL !</div>
+      <div class="pch-kill-sub">${esc(killer.name)} renvoie ${victimIdx.map(i => esc(session.teams[i].name)).join(', ')} à 0</div>
+    </div>`;
+    document.body.appendChild(overlay);
+    setTimeout(() => overlay.remove(), 1600);
   }
 
   function computeValue(sector, ring) {
@@ -346,6 +388,7 @@ window.GAME_MODULES['parchi'] = (() => {
     const team = session.teams[session.currentTeamIndex];
     const member = team.members[team.currentMember];
     const target = session.targetScore;
+    const reachable = reachableScores(team.score, 3 - session.currentTurn.darts.length, target);
 
     container.querySelector('#pchScores').innerHTML = session.teams.map((t, i) => {
       const isActive = i === session.currentTeamIndex;
@@ -354,11 +397,14 @@ window.GAME_MODULES['parchi'] = (() => {
         ? `<div class="dt3-team-members">${t.members.map((m, mi) =>
             `<span class="dt3-member ${mi === t.currentMember && isActive ? 'active' : ''}">${m.avatar}</span>`
           ).join('')}</div>` : '';
-      const last = t.history[t.history.length - 1];
-      const lastStr = last ? `${last.start} → ${last.end}` : '';
       const st = t.stats;
       const avg = st.dartsThrown ? ((st.scoredPoints / st.dartsThrown) * 3).toFixed(1) : '0.0';
-      return `<div class="dt3-score-card ${isActive ? 'active' : ''}" style="--pc:${t.color}">
+      const killable = !isActive && t.score > 0 && reachable.has(t.score);
+      const diff = t.score - team.score;
+      const killHtml = killable
+        ? `<span class="pch-kill-hint">🎯 Kill ${diff > 0 ? '+' + diff : '−' + (-diff) + ' ↩️'}</span>`
+        : '&nbsp;';
+      return `<div class="dt3-score-card ${isActive ? 'active' : ''} ${killable ? 'pch-killable' : ''}" data-team="${i}" style="--pc:${t.color}">
         <div class="dt3-sc-head">
           <span class="dt3-sc-avatar">${t.members.length === 1 ? t.members[0].avatar : '👥'}</span>
           <div class="dt3-sc-info"><div class="dt3-sc-name">${esc(t.name)}</div>${membersHtml}</div>
@@ -367,7 +413,7 @@ window.GAME_MODULES['parchi'] = (() => {
         <div class="dt3-sc-score">${t.score}</div>
         <div class="dt3-sc-bar"><div class="dt3-sc-fill" style="width:${pct}%"></div></div>
         <div class="dt3-sc-last">Reste ${target - t.score} · Moy.3 ${avg}</div>
-        <div class="dt3-sc-last">${st.knockouts ? `💥 ${st.knockouts} · ` : ''}${lastStr}</div>
+        <div class="dt3-sc-last">${killHtml}</div>
       </div>`;
     }).join('');
 

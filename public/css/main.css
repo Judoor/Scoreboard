@@ -2230,3 +2230,53 @@ body {
   white-space: nowrap;
 }
 .aar-delete:hover { border-color: #fb7185; color: #fb7185; background: color-mix(in srgb, #fb7185 10%, transparent); }
+
+/* ── PARCHI ──────────────────────────────────────────────────────────────── */
+.pch-kill-hint {
+  font-family: var(--ff-display); font-weight: 700; font-size: .78rem;
+  color: var(--red);
+}
+.dt3-score-card.pch-killable { border-color: color-mix(in srgb, var(--red) 55%, var(--border)); }
+.dt3-score-card.pch-killed { animation: pchKilled .9s ease; }
+.dt3-score-card.pch-killed .dt3-sc-score { animation: pchScoreDrop .9s ease; }
+@keyframes pchKilled {
+  0%   { transform: translateX(0);    box-shadow: 0 0 0 0 color-mix(in srgb, var(--red) 70%, transparent); border-color: var(--red); }
+  15%  { transform: translateX(-8px) rotate(-2deg); }
+  30%  { transform: translateX(8px)  rotate(2deg); box-shadow: 0 0 0 10px color-mix(in srgb, var(--red) 25%, transparent); }
+  45%  { transform: translateX(-6px) rotate(-1deg); }
+  60%  { transform: translateX(6px)  rotate(1deg); }
+  100% { transform: translateX(0);    box-shadow: 0 0 0 0 transparent; }
+}
+@keyframes pchScoreDrop {
+  0%   { transform: scale(1.6); color: var(--red); }
+  60%  { transform: scale(.9);  color: var(--red); }
+  100% { transform: scale(1); }
+}
+.pch-kill-overlay {
+  position: fixed; inset: 0; z-index: 1000; pointer-events: none;
+  display: flex; align-items: center; justify-content: center; padding: 16px;
+  background: color-mix(in srgb, var(--bg) 55%, color-mix(in srgb, var(--red) 20%, transparent));
+  animation: pchOverlay 1.6s ease forwards;
+}
+.pch-kill-box {
+  text-align: center; background: var(--surface); border: 2px solid var(--red);
+  border-radius: 16px; padding: 18px 28px; max-width: 100%;
+  box-shadow: 0 0 40px color-mix(in srgb, var(--red) 40%, transparent);
+  animation: pchKillPop 1.6s cubic-bezier(.2,1.4,.4,1) forwards; }
+.pch-kill-title {
+  font-family: var(--ff-display); font-weight: 700; font-size: clamp(2.6rem, 14vw, 5rem);
+  letter-spacing: -.03em; color: var(--red);
+  text-shadow: 0 0 24px color-mix(in srgb, var(--red) 60%, transparent);
+}
+.pch-kill-sub { font-family: var(--ff-body); font-weight: 600; font-size: 1rem; color: var(--text); margin-top: 4px; }
+@keyframes pchOverlay { 0% { opacity: 0; } 12% { opacity: 1; } 75% { opacity: 1; } 100% { opacity: 0; } }
+@keyframes pchKillPop {
+  0%   { transform: scale(.3) rotate(-8deg); opacity: 0; }
+  20%  { transform: scale(1.1) rotate(2deg); opacity: 1; }
+  35%  { transform: scale(1) rotate(0); }
+  80%  { transform: scale(1); opacity: 1; }
+  100% { transform: scale(1.15); opacity: 0; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .dt3-score-card.pch-killed, .dt3-score-card.pch-killed .dt3-sc-score, .pch-kill-box { animation: none; }
+}
